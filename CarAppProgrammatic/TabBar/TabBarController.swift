@@ -17,27 +17,20 @@ class TabBarController: UITabBarController {
     }
     
     func setupViewControllers() {
-        let firstVC = VehiclesController()
+        tabBar.isTranslucent = false
+        tabBar.barTintColor = .white
+        let firstVC = UINavigationController(rootViewController: HomeController())
         firstVC.tabBarItem.image = UIImage(named: "", in: Bundle(for: TabBarController.self), compatibleWith: nil)
-        firstVC.tabBarItem.title = "Vehicles"
         firstVC.tabBarItem.image = UIImage(systemName: "steeringwheel")
-        firstVC.title = "Car Rental"
+        firstVC.title = "Vehicles"
         firstVC.tabBarItem.imageInsets = UIEdgeInsets(top: 5, left: 0, bottom: -5, right: 0)
         
-        let secondVC = AllCarsController()
+        let secondVC = UINavigationController(rootViewController: VehiclesController())
         secondVC.tabBarItem.image = UIImage(named: "", in: Bundle(for: TabBarController.self), compatibleWith: nil)
-        secondVC.tabBarItem.title = "Search"
         secondVC.tabBarItem.image = UIImage(systemName: "magnifyingglass")
         secondVC.title = "Search"
-        firstVC.tabBarItem.imageInsets = UIEdgeInsets(top: 5, left: 0, bottom: -5, right: 0)
+        secondVC.tabBarItem.imageInsets = UIEdgeInsets(top: 5, left: 0, bottom: -5, right: 0)
         
         viewControllers = [firstVC, secondVC]
     }
 }
-
-//extension TabBarController: UITabBarControllerDelegate {
-//    func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
-//        let controller = UITabBarController()
-//        
-//    }
-//}

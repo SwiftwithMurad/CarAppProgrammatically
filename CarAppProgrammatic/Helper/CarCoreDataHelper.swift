@@ -29,5 +29,11 @@ class CarCoreDataHelper {
         newCars.model = car.model
         newCars.name = car.name
         newCars.price = car.price
+        do {
+            try context.save()
+            print(newCars)
+        } catch {
+            print(error.localizedDescription)
+        }
     }
 }

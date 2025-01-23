@@ -40,14 +40,14 @@ class VehiclesController: UIViewController {
         configConstraints()
     }
     
-    func configUI() {
+    private func configUI() {
         title = "Search"
         view.backgroundColor = .systemGray5
         [searchView].forEach { view.addSubview($0) }
         [searchField, searchImage].forEach { searchView.addSubview($0) }
     }
     
-    func configConstraints() {
+    private func configConstraints() {
         NSLayoutConstraint.activate([
             searchView.widthAnchor.constraint(equalToConstant: 354),
             searchView.heightAnchor.constraint(equalToConstant: 60),

@@ -16,7 +16,7 @@ class TabBarController: UITabBarController {
         setupViewControllers()
     }
     
-    func setupViewControllers() {
+    private func setupViewControllers() {
         tabBar.isTranslucent = false
         tabBar.barTintColor = .white
         let firstVC = UINavigationController(rootViewController: HomeController())

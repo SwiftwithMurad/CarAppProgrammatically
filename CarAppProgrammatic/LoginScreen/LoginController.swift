@@ -81,13 +81,13 @@ class LoginController: UIViewController {
         viewModel.configLogin(email: emailField.text ?? "", password: passwordField.text ?? "")
     }
     
-    func configUI() {
+    private func configUI() {
         view.backgroundColor = .systemBlue
         [loginImage, carImage, topLabel, emailField, passwordField, loginButton].forEach { view.addSubview($0) }
     }
     
     
-    func configConstraints() {
+    private func configConstraints() {
         NSLayoutConstraint.activate([
             loginImage.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 48),
             loginImage.centerXAnchor.constraint(equalTo: view.centerXAnchor),

@@ -10,6 +10,9 @@ import UIKit
 class HomeHeaderCell: UICollectionViewCell {
     private let categoryView: UIView = {
         let view = UIView()
+        view.layer.borderWidth = 0
+        view.layer.cornerRadius = 20
+        view.backgroundColor = .white
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
@@ -34,20 +37,36 @@ class HomeHeaderCell: UICollectionViewCell {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
+        
         configUI()
+        configConstraints()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func configUI() {
-        [categoryView, cellImage, categoryName].forEach { addSubview($0) }
+    private func configUI() {
+        [categoryView, cellImage, categoryName, categorySize].forEach { addSubview($0) }
     }
     
-    func configConstraints() {
+    private func configConstraints() {
         NSLayoutConstraint.activate([
+            categoryView.topAnchor.constraint(equalTo: topAnchor, constant: 0),
+            categoryView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
+            categoryView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: 0),
+            categoryView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: 0),
             
+            cellImage.leadingAnchor.constraint(equalTo: categoryView.leadingAnchor, constant: -32),
+            cellImage.topAnchor.constraint(equalTo: categoryView.topAnchor, constant: 4),
+            cellImage.widthAnchor.constraint(equalToConstant: 151),
+            cellImage.heightAnchor.constraint(equalToConstant: 86),
+            
+            categoryName.centerXAnchor.constraint(equalTo: categoryView.centerXAnchor),
+            categoryName.topAnchor.constraint(equalTo: cellImage.bottomAnchor, constant: 4),
+            
+            categorySize.centerXAnchor.constraint(equalTo: categoryName.centerXAnchor),
+            categorySize.topAnchor.constraint(equalTo: categoryName.bottomAnchor, constant: 4)
         ])
     }
     

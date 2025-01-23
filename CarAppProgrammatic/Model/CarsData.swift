@@ -6,7 +6,7 @@
 //
 import Foundation
 
-class CarData {
+class CarsData {
     let carHelper = CarCoreDataHelper()
     let categoryHelper = CategoryCoreDataHelper()
     let manager = UserDefaultsManager()

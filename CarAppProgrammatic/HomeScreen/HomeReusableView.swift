@@ -14,19 +14,49 @@ class HomeReusableView: UICollectionReusableView {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
         let collection = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        collection.backgroundColor = .systemGray5
+        collection.showsHorizontalScrollIndicator = false
         collection.translatesAutoresizingMaskIntoConstraints = false
         return collection
     }()
     
+    private let bottomLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Available vehicles"
+        label.font = .systemFont(ofSize: 17, weight: .regular)
+        label.textColor = .black
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
-        headerCollection.delegate = self
-        headerCollection.dataSource = self
-        headerCollection.register(HomeHeaderCell.self, forCellWithReuseIdentifier: "cell")
+
+        configUI()
+        configConstraints()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    private func configUI() {
+        headerCollection.delegate = self
+        headerCollection.dataSource = self
+        headerCollection.register(HomeHeaderCell.self, forCellWithReuseIdentifier: "cell")
+        [headerCollection, bottomLabel].forEach { addSubview($0) }
+    }
+    
+    private func configConstraints() {
+        NSLayoutConstraint.activate([
+            headerCollection.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 0),
+            headerCollection.topAnchor.constraint(equalTo: topAnchor, constant: 0),
+            headerCollection.trailingAnchor.constraint(equalTo: trailingAnchor, constant: 0),
+            headerCollection.bottomAnchor.constraint(equalTo: bottomAnchor, constant: 8),
+            
+            bottomLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
+            bottomLabel.topAnchor.constraint(equalTo: headerCollection.bottomAnchor, constant: 24)
+        ])
     }
     
     func configCategory(category: [CategoryList]) {
@@ -46,6 +76,6 @@ extension HomeReusableView: UICollectionViewDelegate, UICollectionViewDataSource
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        .init(width: 50, height: 50)
+        .init(width: headerCollection.frame.width / 2.8, height: headerCollection.frame.height)
     }
 }

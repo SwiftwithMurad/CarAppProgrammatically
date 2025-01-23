@@ -10,8 +10,10 @@ import UIKit
 class HomeController: UIViewController {
     let carCoreDataHelper = CarCoreDataHelper()
     let categoryCoreDataHelper = CategoryCoreDataHelper()
+    let data = CarsData()
     var cars = [CarList]()
     var categories = [CategoryList]()
+    let manager = UserDefaultsManager()
     
     private let searchView: UIView = {
         let view = UIView()
@@ -41,6 +43,8 @@ class HomeController: UIViewController {
     private let homeCollection: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
+        layout.sectionInset.top = 70
+        layout.minimumLineSpacing = 70
         let collection = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collection.backgroundColor = .systemGray5
         collection.translatesAutoresizingMaskIntoConstraints = false
@@ -52,10 +56,9 @@ class HomeController: UIViewController {
 
         configUI()
         configConstraints()
-        fetchData()
     }
     
-    func configUI() {
+    private func configUI() {
         title = "Car Rental"
         view.backgroundColor = .systemGray5
         [searchView, homeCollection].forEach { view.addSubview($0) }
@@ -64,9 +67,13 @@ class HomeController: UIViewController {
         homeCollection.dataSource = self
         homeCollection.register(HomeReusableView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "header")
         homeCollection.register(CarCategoryCell.self, forCellWithReuseIdentifier: "cell")
+        if !manager.getBool(key: .isSaved) {
+            data.saveData()
+        }
+        fetchData()
     }
     
-    func configConstraints() {
+    private func configConstraints() {
         NSLayoutConstraint.activate([
             searchView.widthAnchor.constraint(equalToConstant: 354),
             searchView.heightAnchor.constraint(equalToConstant: 60),
@@ -107,11 +114,12 @@ extension HomeController: UICollectionViewDelegate, UICollectionViewDataSource, 
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as! CarCategoryCell
+        cell.configCell(car: cars[indexPath.row])
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        .init(width: 100, height: 100)
+        .init(width: homeCollection.frame.width, height: 300)
     }
     
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
@@ -121,6 +129,6 @@ extension HomeController: UICollectionViewDelegate, UICollectionViewDataSource, 
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
-        .init(width: homeCollection.frame.width, height: 100)
+        .init(width: collectionView.frame.width, height: 149)
     }
 }

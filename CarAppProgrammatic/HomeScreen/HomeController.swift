@@ -12,6 +12,7 @@ class HomeController: UIViewController {
     let categoryCoreDataHelper = CategoryCoreDataHelper()
     let data = CarsData()
     var cars = [CarList]()
+    var existedCars = [CarList]()
     var categories = [CategoryList]()
     let manager = UserDefaultsManager()
     
@@ -28,6 +29,7 @@ class HomeController: UIViewController {
         let field = UITextField()
         field.placeholder = "Search for a car"
         field.font = .systemFont(ofSize: 14, weight: .regular)
+        field.addTarget(nil, action: #selector(fieldConfiguration), for: .editingChanged)
         field.translatesAutoresizingMaskIntoConstraints = false
         return field
     }()
@@ -97,9 +99,22 @@ class HomeController: UIViewController {
         ])
     }
     
+    @objc func fieldConfiguration() {
+        if let search = searchField.text?.lowercased() {
+            if !search.isEmpty {
+                cars = cars.filter({ $0.name?.lowercased().contains(search) ?? false })
+                homeCollection.reloadData()
+            } else {
+                cars = existedCars
+                homeCollection.reloadData()
+            }
+        }
+    }
+    
     func fetchData() {
         carCoreDataHelper.fetchCarData { cars in
             self.cars = cars
+            self.existedCars = cars
         }
         categoryCoreDataHelper.fetchCategoryData { categories in
             self.categories = categories

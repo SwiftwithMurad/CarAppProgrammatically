@@ -89,7 +89,7 @@ class CarCategoryCell: UICollectionViewCell {
     private func configConstraints() {
         NSLayoutConstraint.activate([
             generalView.widthAnchor.constraint(equalToConstant: 450),
-            generalView.heightAnchor.constraint(equalToConstant: 300),
+            generalView.heightAnchor.constraint(equalToConstant: 350),
             generalView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 28),
             generalView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -28),
             generalView.topAnchor.constraint(equalTo: topAnchor, constant: 4),

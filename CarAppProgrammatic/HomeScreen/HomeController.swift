@@ -7,7 +7,7 @@
 
 import UIKit
 
-class HomeController: UIViewController {
+class HomeController: BaseController {
     let carCoreDataHelper = CarCoreDataHelper()
     let categoryCoreDataHelper = CategoryCoreDataHelper()
     let data = CarsData()
@@ -55,12 +55,9 @@ class HomeController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        configUI()
-        configConstraints()
     }
     
-    private func configUI() {
+    override func configUI() {
         title = "Car Rental"
         view.backgroundColor = .systemGray5
         [searchView, homeCollection].forEach { view.addSubview($0) }
@@ -75,7 +72,7 @@ class HomeController: UIViewController {
         fetchData()
     }
     
-    private func configConstraints() {
+    override func configConstraints() {
         NSLayoutConstraint.activate([
             searchView.widthAnchor.constraint(equalToConstant: 354),
             searchView.heightAnchor.constraint(equalToConstant: 60),

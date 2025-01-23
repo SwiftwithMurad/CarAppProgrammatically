@@ -7,7 +7,16 @@
 
 import UIKit
 
-class VehiclesController: UIViewController {
+class VehiclesController: BaseController {
+    let carCoreDataHelper = CarCoreDataHelper()
+    let categoryCoreDataHelper = CategoryCoreDataHelper()
+    let data = CarsData()
+    var cars = [CarList]()
+    var existedCars = [CarList]()
+    var categories = [CategoryList]()
+    let manager = UserDefaultsManager()
+    
+    
     private let searchView: UIView = {
         let view = UIView()
         view.layer.borderWidth = 0
@@ -21,6 +30,7 @@ class VehiclesController: UIViewController {
         let field = UITextField()
         field.placeholder = "Search for a car"
         field.font = .systemFont(ofSize: 14, weight: .regular)
+        field.addTarget(self, action: #selector(fieldConfiguration), for: .editingChanged)
         field.translatesAutoresizingMaskIntoConstraints = false
         return field
     }()
@@ -32,22 +42,46 @@ class VehiclesController: UIViewController {
         image.translatesAutoresizingMaskIntoConstraints = false
         return image
     }()
+    
+    private let homeCollection: UICollectionView = {
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .vertical
+        layout.sectionInset.top = 10
+        layout.minimumLineSpacing = 70
+        let collection = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        collection.backgroundColor = .systemGray5
+        collection.translatesAutoresizingMaskIntoConstraints = false
+        return collection
+    }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        configUI()
-        configConstraints()
     }
     
-    private func configUI() {
+    @objc func fieldConfiguration() {
+        if let search = searchField.text?.lowercased() {
+            if !search.isEmpty {
+                cars = cars.filter({ $0.name?.lowercased().contains(search) ?? false })
+                homeCollection.reloadData()
+            } else {
+                cars = existedCars
+                homeCollection.reloadData()
+            }
+        }
+    }
+    
+    override func configUI() {
         title = "Search"
         view.backgroundColor = .systemGray5
-        [searchView].forEach { view.addSubview($0) }
+        [searchView, homeCollection].forEach { view.addSubview($0) }
         [searchField, searchImage].forEach { searchView.addSubview($0) }
+        homeCollection.delegate = self
+        homeCollection.dataSource = self
+        homeCollection.register(CarCategoryCell.self, forCellWithReuseIdentifier: "cell")
+        fetchData()
     }
     
-    private func configConstraints() {
+    override func configConstraints() {
         NSLayoutConstraint.activate([
             searchView.widthAnchor.constraint(equalToConstant: 354),
             searchView.heightAnchor.constraint(equalToConstant: 60),
@@ -63,7 +97,38 @@ class VehiclesController: UIViewController {
             searchImage.heightAnchor.constraint(equalToConstant: 17),
             searchImage.centerYAnchor.constraint(equalTo: searchField.centerYAnchor),
             searchImage.leadingAnchor.constraint(equalTo: searchField.trailingAnchor, constant: 12),
-
+            
+            homeCollection.topAnchor.constraint(equalTo: searchView.bottomAnchor, constant: 32),
+            homeCollection.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 0),
+            homeCollection.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: 0),
+            homeCollection.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 0),
         ])
+    }
+    
+    func fetchData() {
+        carCoreDataHelper.fetchCarData { cars in
+            self.cars = cars
+            self.existedCars = cars
+        }
+        categoryCoreDataHelper.fetchCategoryData { categories in
+            self.categories = categories
+        }
+    }
+}
+
+
+extension VehiclesController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return cars.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as! CarCategoryCell
+        cell.configCell(car: cars[indexPath.row])
+        return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        .init(width: homeCollection.frame.width, height: 300)
     }
 }

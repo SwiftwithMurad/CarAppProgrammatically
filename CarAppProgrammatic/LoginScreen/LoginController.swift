@@ -7,7 +7,7 @@
 
 import UIKit
 
-class LoginController: UIViewController {
+class LoginController: BaseController {
     let viewModel = LoginViewModel()
     
     private let carImage: UIImageView = {
@@ -72,22 +72,19 @@ class LoginController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        configUI()
-        configConstraints()
     }
     
     @objc func loginButtonTapped() {
         viewModel.configLogin(email: emailField.text ?? "", password: passwordField.text ?? "")
     }
     
-    private func configUI() {
+    override func configUI() {
         view.backgroundColor = .systemBlue
         [loginImage, carImage, topLabel, emailField, passwordField, loginButton].forEach { view.addSubview($0) }
     }
     
     
-    private func configConstraints() {
+    override func configConstraints() {
         NSLayoutConstraint.activate([
             loginImage.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 48),
             loginImage.centerXAnchor.constraint(equalTo: view.centerXAnchor),

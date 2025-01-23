@@ -12,6 +12,10 @@ class BaseController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        
+        configUI()
+        configConstraints()
     }
+    
+    func configUI() {}
+    func configConstraints() {}
 }

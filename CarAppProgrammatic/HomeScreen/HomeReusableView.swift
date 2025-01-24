@@ -9,6 +9,7 @@ import UIKit
 
 class HomeReusableView: UICollectionReusableView {
     var categories = [CategoryList]()
+    var handleCarCategory: ((String) -> Void)?
     
     private let headerCollection: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -71,11 +72,19 @@ extension HomeReusableView: UICollectionViewDelegate, UICollectionViewDataSource
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as! HomeHeaderCell
-        cell.configCell(category: categories[indexPath.row])
+        cell.configCell(category: categories[indexPath.row], isSelected: categories[indexPath.row].isSelected)
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         .init(width: headerCollection.frame.width / 2.8, height: headerCollection.frame.height)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        for (index, _) in categories.enumerated() {
+            categories[index].isSelected = index == indexPath.item
+        }
+        handleCarCategory?(categories[indexPath.row].name ?? "")
+        headerCollection.reloadData()
     }
 }

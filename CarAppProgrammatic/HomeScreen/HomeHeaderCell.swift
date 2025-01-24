@@ -70,9 +70,12 @@ class HomeHeaderCell: UICollectionViewCell {
         ])
     }
     
-    func configCell(category: CategoryList) {
+    func configCell(category: CategoryList, isSelected: Bool) {
         categoryName.text = category.name
         cellImage.image = UIImage(named: category.image ?? "")
         categorySize.text = category.size
+        categoryView.backgroundColor = isSelected ? .systemBlue: .white
+        categoryName.textColor = isSelected ? .white: .black
+        categorySize.textColor = isSelected ? .white: .black
     }
 }

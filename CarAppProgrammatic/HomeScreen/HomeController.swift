@@ -8,13 +8,7 @@
 import UIKit
 
 class HomeController: BaseController {
-    let carCoreDataHelper = CarCoreDataHelper()
-    let categoryCoreDataHelper = CategoryCoreDataHelper()
-    let data = CarsData()
-    var cars = [CarList]()
-    var existedCars = [CarList]()
-    var categories = [CategoryList]()
-    let manager = UserDefaultsManager()
+    let viewModel = HomeViewModel()
     
     private let searchView: UIView = {
         let view = UIView()
@@ -52,7 +46,7 @@ class HomeController: BaseController {
         collection.translatesAutoresizingMaskIntoConstraints = false
         return collection
     }()
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
     }
@@ -66,10 +60,6 @@ class HomeController: BaseController {
         homeCollection.dataSource = self
         homeCollection.register(HomeReusableView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "header")
         homeCollection.register(CarCategoryCell.self, forCellWithReuseIdentifier: "cell")
-        if !manager.getBool(key: .isSaved) {
-            data.saveData()
-        }
-        fetchData()
     }
     
     override func configConstraints() {
@@ -97,36 +87,24 @@ class HomeController: BaseController {
     }
     
     @objc func fieldConfiguration() {
-        if let search = searchField.text?.lowercased() {
-            if !search.isEmpty {
-                cars = cars.filter({ $0.name?.lowercased().contains(search) ?? false })
-                homeCollection.reloadData()
-            } else {
-                cars = existedCars
-                homeCollection.reloadData()
-            }
+        viewModel.configField(search: searchField.text ?? "") {
+            self.homeCollection.reloadData()
         }
     }
     
-    func fetchData() {
-        carCoreDataHelper.fetchCarData { cars in
-            self.cars = cars
-            self.existedCars = cars
-        }
-        categoryCoreDataHelper.fetchCategoryData { categories in
-            self.categories = categories
-        }
+    override func configViewModel() {
+        viewModel.fetchData()
     }
 }
 
 extension HomeController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return cars.count
+        return viewModel.cars.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as! CarCategoryCell
-        cell.configCell(car: cars[indexPath.row])
+        cell.configCell(car: viewModel.cars[indexPath.row])
         return cell
     }
     
@@ -136,7 +114,11 @@ extension HomeController: UICollectionViewDelegate, UICollectionViewDataSource, 
     
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "header", for: indexPath) as! HomeReusableView
-        header.configCategory(category: categories)
+        header.configCategory(category: viewModel.categories)
+        header.handleCarCategory = { name in
+            self.viewModel.cars = self.viewModel.existedCars.filter({ $0.category == name })
+            self.homeCollection.reloadData()
+        }
         return header
     }
     

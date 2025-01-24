@@ -116,6 +116,7 @@ class CarCategoryCell: UICollectionViewCell {
             carImage.heightAnchor.constraint(equalToConstant: 180),
             carImage.leadingAnchor.constraint(equalTo: generalView.leadingAnchor, constant: 4),
             carImage.trailingAnchor.constraint(equalTo: generalView.trailingAnchor, constant: -4),
+            carImage.centerXAnchor.constraint(equalTo: generalView.centerXAnchor),
             carImage.bottomAnchor.constraint(equalTo: generalView.bottomAnchor, constant: -16),
         ])
     }

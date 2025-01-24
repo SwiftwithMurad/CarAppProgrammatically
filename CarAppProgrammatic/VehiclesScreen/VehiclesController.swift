@@ -8,14 +8,7 @@
 import UIKit
 
 class VehiclesController: BaseController {
-    let carCoreDataHelper = CarCoreDataHelper()
-    let categoryCoreDataHelper = CategoryCoreDataHelper()
-    let data = CarsData()
-    var cars = [CarList]()
-    var existedCars = [CarList]()
-    var categories = [CategoryList]()
-    let manager = UserDefaultsManager()
-    
+    let viewModel = VehiclesViewModel()
     
     private let searchView: UIView = {
         let view = UIView()
@@ -59,14 +52,8 @@ class VehiclesController: BaseController {
     }
     
     @objc func fieldConfiguration() {
-        if let search = searchField.text?.lowercased() {
-            if !search.isEmpty {
-                cars = cars.filter({ $0.name?.lowercased().contains(search) ?? false })
-                homeCollection.reloadData()
-            } else {
-                cars = existedCars
-                homeCollection.reloadData()
-            }
+        viewModel.configField(search: searchField.text ?? "") {
+            self.homeCollection.reloadData()
         }
     }
     
@@ -78,7 +65,6 @@ class VehiclesController: BaseController {
         homeCollection.delegate = self
         homeCollection.dataSource = self
         homeCollection.register(CarCategoryCell.self, forCellWithReuseIdentifier: "cell")
-        fetchData()
     }
     
     override func configConstraints() {
@@ -105,26 +91,20 @@ class VehiclesController: BaseController {
         ])
     }
     
-    func fetchData() {
-        carCoreDataHelper.fetchCarData { cars in
-            self.cars = cars
-            self.existedCars = cars
-        }
-        categoryCoreDataHelper.fetchCategoryData { categories in
-            self.categories = categories
-        }
+    override func configViewModel() {
+        viewModel.fetchData()
     }
 }
 
 
 extension VehiclesController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return cars.count
+        return viewModel.cars.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as! CarCategoryCell
-        cell.configCell(car: cars[indexPath.row])
+        cell.configCell(car: viewModel.cars[indexPath.row])
         return cell
     }
     

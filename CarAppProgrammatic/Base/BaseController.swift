@@ -14,8 +14,10 @@ class BaseController: UIViewController {
 
         configUI()
         configConstraints()
+        configViewModel()
     }
     
     func configUI() {}
     func configConstraints() {}
+    func configViewModel() {}
 }
